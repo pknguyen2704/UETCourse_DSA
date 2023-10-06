@@ -1,27 +1,41 @@
 #include <iostream>
-#include <set>
-#include <string>
+#include <map>
 
 using namespace std;
 
 struct Student {
-    int id;
     string name;
-    string studentClass;
-
-    Student(const int i, const string n, const string sc) {
-        id = i;
-        name = n;
-        studentClass = sc;
-    }
-
-    bool operator<(const Student& other) const {
-        return id < other.id;
-    }
+    string className;
 };
 
+map <int, Student> students;
+
+void insert(int ID, const string& name, const string& className) {
+    if(students.find(ID) != students.end()) {
+        cout << "Error: This ID is exist" << endl;
+    } else {
+        Student newStudent;
+        newStudent.name = name;
+        newStudent.className = className;
+        students[ID] = newStudent;
+    }
+}
+void Delete(int ID) {
+    if(students.find(ID) != students.end()) {
+        students.erase(ID);
+    }
+    else {
+        cout << "Student with this ID is not found" << endl;
+    }
+}
+void Infor(int ID) {
+    if(students.find(ID) != students.end()) {
+        cout << students[ID].name << "," << students[ID].className << endl;
+    } else {
+        cout << "NA,NA" << endl;
+    }
+}
 int main() {
-    set <Student> studentSet;
     string s;
     while(cin >> s) {
         if(s.substr(0, 6) == "Insert") {
@@ -31,6 +45,7 @@ int main() {
                 id = id*10 + (int)(s[tmp] - '0');
                 tmp++;
             }
+
             //cout << id;
             tmp++;
             string name = "";
@@ -38,6 +53,7 @@ int main() {
                 name += s[tmp];
                 tmp++;
             }
+
             //cout << name;
             tmp++;
             string studentClass = "";
@@ -45,8 +61,7 @@ int main() {
                 studentClass += s[tmp];
                 tmp++;
             }
-            //cout << id << " " << name << " " << studentClass;
-            studentSet.insert(Student(id, name, studentClass));
+            insert(id, name, studentClass);
         }
         else if(s.substr(0,5) == "Infor") {
             int id = 0;
@@ -55,12 +70,7 @@ int main() {
                     id = id*10 + (int)(s[i] - '0');
                 }
             }
-            auto it = studentSet.lower_bound(Student(id, "", ""));
-            if(it != studentSet.end() && it->id == id) {
-                cout << it->name << "," << it->studentClass << endl;
-            } else {
-                cout << "NA, NA" << endl;
-            }
+            Infor(id);
         }
         else if(s.substr(0, 6) == "Delete") {
             int id = 0;
@@ -69,14 +79,7 @@ int main() {
                     id = id*10 + (int)(s[i] - '0');
                 }
             }
-            auto it = studentSet.begin();
-            while(it != studentSet.end()) {
-                if(it->id == id) {
-                    it = studentSet.erase(it);
-                } else {
-                    it++;
-                }
-            }
+            Delete(id);
         }
         else {
             break;
